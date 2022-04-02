@@ -11,34 +11,43 @@ app = Flask(__name__)
 
 @app.route('/', methods=['GET', 'POST'])
 def hello_world():
-    posted_json = request.get_json() or {}
-    today = datetime.today().strftime("%B %d, %Y")
-    invoice_number = 123
-    from_addr = {
-        'company_name': 'Python Top',
-        'addr1': '12345 Sunny Road',
-        'addr2': 'Sunnyville, CA 12345'
-    }
-    to_addr = {
-        'company_name': 'Nanko Industries',
-        'person_name': 'Don K. Isiko',
-        'person_email': 'don@nanko.com'
-    }
-    items = [
-        {
-            'title': 'website design',
-            'charge': 300.00
+    posted_data = request.get_json() or {}
+    default_data = {
+        'invoice_number': 123,
+        'today': datetime.today().strftime("%B %d, %Y"),
+        'duedate': datetime.fromisocalendar(2022, 30, 5).strftime("%B %d, %Y"),
+        'from_addr': {
+            'company_name': 'Python Top',
+            'addr1': '12345 Sunny Road',
+            'addr2': 'Sunnyville, CA 12345'
         },
-        {
-            'title': 'Hosting',
-            'charge': 100.00
-        },
-        {
-            'title': 'Domain name',
-            'charge': 10
+        'items': [
+            {
+                'title': 'website design',
+                'charge': 300.00
+            },
+            {
+                'title': 'Hosting',
+                'charge': 100.00
+            },
+            {
+                'title': 'Domain name',
+                'charge': 10
+            }
+        ],
+        'to_addr': {
+            'company_name': 'Nanko Industries',
+            'person_name': 'Don K. Isiko',
+            'person_email': 'don@nanko.com'
         }
-    ]
-    duedate = datetime.fromisocalendar(2022, 30, 5).strftime("%B %d, %Y")
+    }
+
+    today = posted_data.get('today', default_data['today'])
+    duedate = posted_data.get('duedate', default_data['duedate'])
+    from_addr = posted_data.get('from_addr', default_data['from_addr'])
+    to_addr = posted_data.get('to_addr', default_data['to_addr'])
+    invoice_number = posted_data.get('invoice_number', default_data['invoice_number'])
+    items = posted_data.get('items', default_data['items'])
     total = sum([i['charge'] for i in items])
 
     rendered = render_template('invoice.html',
