@@ -35,6 +35,6 @@ data = {
     }
 
 html = requests.post(url, json=data)
-with open('./resources/invoice.pdf', 'wb') as f:
+with open('../resources/invoice.pdf', 'wb') as f:
     f.write(html.content)
 
